@@ -216,7 +216,7 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
   venue = Venue.query.filter_by(id=venue_id).first()
   data={}
   data['id']=venue.id
@@ -447,11 +447,32 @@ def edit_artist(artist_id):
     "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
     "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
   }
+  artist=Artist.query.filter_by(id=artist_id).first()
   # TODO: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
+  artist=Artist.query.filter_by(id=artist_id).first()
+  try:
+    artist.name=request.form.get('name')
+    artist.city=request.form.get('city')
+    artist.state=request.form.get('state')
+    artist.phone=request.form.get('phone')
+    artist.genres=request.form.get('genres')
+    artist.facebook_link=request.form.get('facebook_link')
+    
+    db.session.commit()
+  
+  
+
+    flash('Artist ' + request.form['name'] + ' was successfully edited!')
+  except:
+    db.session.rollback()
+    flash('An error occurred. Artist ' +request.form['name'] + ' could not be edited.')###############################################################################
+  finally:
+    db.session.close()
+  
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
 
@@ -474,11 +495,36 @@ def edit_venue(venue_id):
     "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
     "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
   }
+  venue=Venue.query.filter_by(id=venue_id).first()
   # TODO: populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
+  venue=Venue.query.filter_by(id=venue_id).first()
+
+
+
+  try:
+    venue.name=request.form.get('name')
+    venue.city=request.form.get('city')
+    venue.state=request.form.get('state')
+    venue.address=request.form.get('address')
+    venue.phone=request.form.get('phone')
+    venue.genres=request.form.get('genres')
+    venue.facebook_link=request.form.get('facebook_link')
+    
+    
+    db.session.commit()
+  
+    flash('Venue ' + request.form['name'] + ' was successfully edited!')
+  except:
+    db.session.rollback()
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be edited. :(') ####################################################################################################
+  finally:
+    db.session.close()
+ 
+  
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
   return redirect(url_for('show_venue', venue_id=venue_id))
