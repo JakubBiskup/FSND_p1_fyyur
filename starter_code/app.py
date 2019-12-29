@@ -217,6 +217,35 @@ def show_venue(venue_id):
     "upcoming_shows_count": 1,
   }
   data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  venue = Venue.query.filter_by(id=venue_id).first()
+  data={}
+  data['id']=venue.id
+  data["name"]=venue.name
+  data["genres"]=venue.genres
+  data["city"]=venue.city
+  data["state"]=venue.state
+  data["phone"]=venue.phone
+  data["image_link"]=venue.image_link
+  data["facebook_link"]=venue.facebook_link
+  data["address"]=venue.address
+  
+
+  shows_there=Show.query.filter_by(venue_id=venue_id).all()
+  shows_that_passed=[]
+  count_of_past_shows=0
+  shows_yet_to_come=[]
+  count_of_upcoming_shows=0
+  for show in shows_there:
+    if dateutil.parser.parse(show.start_time)>datetime.now():
+      shows_yet_to_come.append(show)
+      count_of_upcoming_shows+=1
+    else:
+      shows_that_passed.append(show)
+      count_of_past_shows+=1
+  data['upcoming_shows']=shows_yet_to_come
+  data["past_shows"]=shows_that_passed
+  data["past_shows_count"]=count_of_past_shows
+  data["upcoming_shows_count"]=count_of_upcoming_shows
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -370,7 +399,34 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }
-  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  artist = Artist.query.filter_by(id=artist_id).first()
+  data={}
+  data['id']=artist.id
+  data["name"]=artist.name
+  data["genres"]=artist.genres
+  data["city"]=artist.city
+  data["state"]=artist.state
+  data["phone"]=artist.phone
+  data["image_link"]=artist.image_link
+  data["facebook_link"]=artist.facebook_link
+
+  shows_of_this_artist=Show.query.filter_by(artist_id=artist_id).all()
+  shows_that_passed=[]
+  count_of_past_shows=0
+  shows_yet_to_come=[]
+  count_of_upcoming_shows=0
+  for show in shows_of_this_artist:
+    if dateutil.parser.parse(show.start_time)>datetime.now():
+      shows_yet_to_come.append(show)
+      count_of_upcoming_shows+=1
+    else:
+      shows_that_passed.append(show)
+      count_of_past_shows+=1
+  data['upcoming_shows']=shows_yet_to_come
+  data["past_shows"]=shows_that_passed
+  data["past_shows_count"]=count_of_past_shows
+  data["upcoming_shows_count"]=count_of_upcoming_shows
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
