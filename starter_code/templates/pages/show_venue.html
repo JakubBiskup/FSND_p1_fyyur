@@ -6,6 +6,7 @@
 		<h1 class="monospace">
 			{{ venue.name }}
 		</h1>
+		<button class="delete-button">DELETE</button> 
 		<p class="subtitle">
 			ID: {{ venue.id }}
 		</p>
@@ -74,6 +75,26 @@
 		{% endfor %}
 	</div>
 </section>
+<script>
+	const deleteButton=document.querySelectorAll('.delete-button')[0];
+	deleteButton.onclick=function(e){
+		console.log('event',e);
+		const venue_id="{{venue.id}}";
+		fetch('/venues/'+venue_id,{
+			method: 'DELETE',
+			
+		})
+		.then(function() {
+			location.href='/';
+		})
+		
+		
+	
+		
+	}
+
+	
+</script>
 
 {% endblock %}
 
