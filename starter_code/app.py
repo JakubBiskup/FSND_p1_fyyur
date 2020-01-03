@@ -30,12 +30,12 @@ class Venue(db.Model):
     __tablename__ = 'Venue'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
+    name = db.Column(db.String(120),nullable=False)
+    city = db.Column(db.String(120),nullable=False)
+    state = db.Column(db.String(2),nullable=False)
+    address = db.Column(db.String(120),nullable=False)
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(200))
+    genres = db.Column(db.ARRAY(db.String(50)),nullable=False)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     shows=db.relationship('Show',backref='venue')
@@ -46,11 +46,11 @@ class Artist(db.Model):
     __tablename__ = 'Artist'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
+    name = db.Column(db.String(120),nullable=False)
+    city = db.Column(db.String(120),nullable=False)
+    state = db.Column(db.String(2),nullable=False)
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(db.String(50)),nullable=False)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     shows=db.relationship('Show', backref='artist')
@@ -172,7 +172,7 @@ def create_venue_submission():
     state=request.form.get('state')
     address=request.form.get('address')
     phone=request.form.get('phone')
-    genres=request.form.get('genres')
+    genres=request.form.getlist('genres')
     facebook_link=request.form.get('facebook_link')
     new_venue=Venue(name =name, city=city, state=state,address=address, phone=phone, genres=genres, facebook_link=facebook_link)
     db.session.add(new_venue)
@@ -197,11 +197,6 @@ def delete_venue(venue_id):
     flash('An error occurred. Venue ' + Venue.query.filter_by(id=venue_id).name + ' could not be deleted.') 
   finally:
     db.session.close()
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
     return render_template('pages/home.html')
 
 #  Artists
@@ -273,7 +268,7 @@ def edit_artist_submission(artist_id):
     artist.city=request.form.get('city')
     artist.state=request.form.get('state')
     artist.phone=request.form.get('phone')
-    artist.genres=request.form.get('genres')
+    artist.genres=request.form.getlist('genres')
     artist.facebook_link=request.form.get('facebook_link')
     db.session.commit()
     flash('Artist ' + request.form['name'] + ' was successfully edited!')
@@ -300,7 +295,7 @@ def edit_venue_submission(venue_id):
     venue.state=request.form.get('state')
     venue.address=request.form.get('address')
     venue.phone=request.form.get('phone')
-    venue.genres=request.form.get('genres')
+    venue.genres=request.form.getlist('genres')
     venue.facebook_link=request.form.get('facebook_link')
     db.session.commit()
     flash('Venue ' + request.form['name'] + ' was successfully edited!')
@@ -327,7 +322,7 @@ def create_artist_submission():
     city=request.form.get('city')
     state=request.form.get('state')
     phone=request.form.get('phone')
-    genres=request.form.get('genres')
+    genres=request.form.getlist('genres')
     facebook_link=request.form.get('facebook_link')
     new_artist=Artist(name=name,city=city,state=state,phone=phone,genres=genres,facebook_link=facebook_link)
     db.session.add(new_artist)
@@ -346,16 +341,7 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-
   data=Show.query.all() 
- 
-  
- 
-
-
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
