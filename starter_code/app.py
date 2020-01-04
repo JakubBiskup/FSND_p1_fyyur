@@ -38,6 +38,10 @@ class Venue(db.Model):
     genres = db.Column(db.ARRAY(db.String(50)),nullable=False)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website=db.Column(db.String(120))
+    seeking_talent=db.Column(db.Boolean())
+    seeking_description=db.Column(db.String(800))
+
     shows=db.relationship('Show',backref='venue')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -138,6 +142,9 @@ def show_venue(venue_id):
   data["image_link"]=venue.image_link
   data["facebook_link"]=venue.facebook_link
   data["address"]=venue.address
+  data["website"]=venue.website
+  data["seeking_talent"]=venue.seeking_talent
+  data["seeking_description"]=venue.seeking_description
   shows_there=Show.query.filter_by(venue_id=venue_id).all()
   shows_that_passed=[]
   count_of_past_shows=0
@@ -174,13 +181,20 @@ def create_venue_submission():
     phone=request.form.get('phone')
     genres=request.form.getlist('genres')
     facebook_link=request.form.get('facebook_link')
-    new_venue=Venue(name =name, city=city, state=state,address=address, phone=phone, genres=genres, facebook_link=facebook_link)
+    image_link=request.form.get('image_link')
+    website=request.form.get('website')
+    if request.form.get('seeking_talent'):
+      seeking_talent=True
+    else:
+      seeking_talent=False
+    seeking_description=request.form.get('seeking_description')
+    new_venue=Venue(image_link=image_link, website=website, seeking_talent=seeking_talent, seeking_description=seeking_description,name =name, city=city, state=state,address=address, phone=phone, genres=genres, facebook_link=facebook_link)
     db.session.add(new_venue)
     db.session.commit()
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
-    flash('An error occurred. Venue ' + request.form.get('name') + ' could not be listed.') 
+    flash('An error occurred. Venue ' + request.form.get('name') + ' could not be listed.')
   finally:
     db.session.close()
   return render_template('pages/home.html')
@@ -297,6 +311,13 @@ def edit_venue_submission(venue_id):
     venue.phone=request.form.get('phone')
     venue.genres=request.form.getlist('genres')
     venue.facebook_link=request.form.get('facebook_link')
+    venue.image_link=request.form.get('image_link')
+    venue.website=request.form.get('website')
+    if request.form.get('seeking_talent'):
+      venue.seeking_talent=True
+    else:
+      venue.seeking_talent=False
+    venue.seeking_description=request.form.get('seeking_description')
     db.session.commit()
     flash('Venue ' + request.form['name'] + ' was successfully edited!')
   except:
