@@ -133,6 +133,15 @@ class ArtistForm(Form):
     city = StringField(
         'city', validators=[DataRequired()]
     )
+    website = StringField(
+        'website'
+    )
+    seeking_venue = BooleanField(
+        'seeking_venue'
+    )
+    seeking_description = StringField(
+        'seeking_description'
+    )
     state = SelectField(
         'state', validators=[DataRequired()],
         choices=[

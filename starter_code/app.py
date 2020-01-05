@@ -44,7 +44,6 @@ class Venue(db.Model):
 
     shows=db.relationship('Show',backref='venue')
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -57,6 +56,9 @@ class Artist(db.Model):
     genres = db.Column(db.ARRAY(db.String(50)),nullable=False)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website=db.Column(db.String(120))
+    seeking_venue=db.Column(db.Boolean())
+    seeking_description=db.Column(db.String(800))
     shows=db.relationship('Show', backref='artist')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -247,6 +249,9 @@ def show_artist(artist_id):
   data["phone"]=artist.phone
   data["image_link"]=artist.image_link
   data["facebook_link"]=artist.facebook_link
+  data["website"]=artist.website
+  data["seeking_venue"]=artist.seeking_venue
+  data["seeking_description"]=artist.seeking_description  
 
   shows_of_this_artist=Show.query.filter_by(artist_id=artist_id).all()
   shows_that_passed=[]
@@ -284,6 +289,13 @@ def edit_artist_submission(artist_id):
     artist.phone=request.form.get('phone')
     artist.genres=request.form.getlist('genres')
     artist.facebook_link=request.form.get('facebook_link')
+    artist.image_link=request.form.get('image_link')
+    artist.website=request.form.get('website')
+    if request.form.get('seeking_venue'):
+      artist.seeking_venue=True
+    else:
+      artist.seeking_venue=False
+    artist.seeking_description=request.form.get('seeking_description')
     db.session.commit()
     flash('Artist ' + request.form['name'] + ' was successfully edited!')
   except:
@@ -345,7 +357,14 @@ def create_artist_submission():
     phone=request.form.get('phone')
     genres=request.form.getlist('genres')
     facebook_link=request.form.get('facebook_link')
-    new_artist=Artist(name=name,city=city,state=state,phone=phone,genres=genres,facebook_link=facebook_link)
+    image_link=request.form.get('image_link')
+    website=request.form.get('website')
+    if request.form.get('seeking_venue'):
+      seeking_venue=True
+    else:
+      seeking_venue=False
+    seeking_description=request.form.get('seeking_description')
+    new_artist=Artist(image_link=image_link,website=website,seeking_venue=seeking_venue,seeking_description=seeking_description,name=name,city=city,state=state,phone=phone,genres=genres,facebook_link=facebook_link)
     db.session.add(new_artist)
     db.session.commit()
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
