@@ -61,7 +61,6 @@ class Artist(db.Model):
     seeking_description=db.Column(db.String(800))
     shows=db.relationship('Show', backref='artist')
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Show(db.Model):
   __tablename__ = 'Show'
@@ -70,7 +69,6 @@ class Show(db.Model):
   venue_id=db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
   start_time=db.Column(db.String(50), nullable=False)
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
 # Filters.
